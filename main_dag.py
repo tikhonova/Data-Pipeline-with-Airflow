@@ -4,8 +4,7 @@ from airflow import DAG
 #from airflow.operators.dummy_operator import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                                 LoadDimensionOperator, DataQualityOperator)
-from helpers import SqlQueries
-import boto3
+from helpers.sql_statements import SqlQueries
 
 # Default Arguments per Project Requirements
 default_args = {
@@ -45,7 +44,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
-    task_id='Stage_events',
+    task_id='Stage_songs',
     dag=dag,
     table="staging_events",
     s3_key='log_data',
@@ -115,8 +114,12 @@ run_quality_checks = DataQualityOperator(
 
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table
-load_songplays_table >> [load_user_dimension_table, load_song_dimension_table, load_artist_dimension_table,
-                         load_time_dimension_table]
+
+load_songplays_table >> load_user_dimension_table
+load_songplays_table >> load_song_dimension_table
+load_songplays_table >> load_artist_dimension_table
+load_songplays_table >> load_time_dimension_table
+
 load_user_dimension_table >> run_quality_checks
 load_song_dimension_table >> run_quality_checks
 load_artist_dimension_table >> run_quality_checks
