@@ -13,7 +13,7 @@ The source data resides in S3 and needs to be processed in the Redshift data war
 * Song data: s3://udacity-dend/song_data
 
 ### Prerequisites
-* AWS with Cluster running on us-west-2
+* AWS with Cluster running on us-west-2c
 * Airflow running locally
 
 ### AWS Cluster Setup
