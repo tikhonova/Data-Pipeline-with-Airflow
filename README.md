@@ -35,3 +35,10 @@ The source data resides in S3 and needs to be processed in the Redshift data war
 4. **load_dimension.py**: instantiates LoadDimensionOperator to load dimension tables.
 5. **load_fact.py**: instantiates LoadFactOperator to load the fact table.
 6. **data_quality.py**: instantiates DataQualityOperator to run data quality checks.
+
+
+### Steps
+1. Create a Redshift cluster following the below requirements.
+2. Create an Airflow connection via Postgres to your AWS cluster; call it 'redshift'.
+3. Create an Airflow connection with your AWS User credentials; call it 'aws_credentials'.
+4. Launch the Airflow web server to run the DAG.
