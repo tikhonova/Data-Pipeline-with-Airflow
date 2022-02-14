@@ -38,7 +38,7 @@ The source data resides in S3 and needs to be processed in the Redshift data war
 
 
 ### Steps
-1. Create a Redshift cluster following the below requirements.
+1. Create a Redshift cluster following the above requirements.
 2. Create an Airflow connection via Postgres to your AWS cluster; call it 'redshift'.
 3. Create an Airflow connection with your AWS User credentials; call it 'aws_credentials'.
 4. Launch the Airflow web server to run the DAG.
