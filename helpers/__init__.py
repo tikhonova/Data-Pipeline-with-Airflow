@@ -1,4 +1,4 @@
-from helpers.sql_statements import SqlQueries
+from helpers.sql_queries import SqlQueries
 
 __all__ = [
     'SqlQueries',

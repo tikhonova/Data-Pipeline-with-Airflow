@@ -1,29 +1,40 @@
 from airflow.hooks.postgres_hook import PostgresHook
-from airflow.models import BaseOperators
+from airflow.models import BaseOperator
 from helpers import SqlQueries
-import boto3
+
 
 class LoadDimensionOperator(BaseOperator):
     ui_color = '#80BD9E'
 
+    load_dimension_table_insert = """
+    INSERT INTO {} {}
+    """
+    load_dimension_table_truncate = """
+    TRUNCATE TABLE {} 
+    """
+
     def __init__(self,
-                 redshift_conn_id="",
-                 table="",
                  sql="",
-                 append=False,
+                 conn_id="",
+                 table="",
+                 mode="",
                  *args, **kwargs):
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
-        self.redshift_conn_id = redshift_conn_id
-        self.table = table
+
         self.sql = sql
-        self.append_only = append
+        self.conn_id = conn_id
+        self.table = table
+        self.mode = mode
 
     def execute(self, context):
-        self.log.info('LoadDimensionOperator not implemented yet')
-        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
-        if not self.append:
-            self.log.info("Delete {} dimension table".format(self.table))
-            redshift.run("DELETE FROM {}".format(self.table))
-        self.log.info("Insert data from fact table into {} dimension table".format(self.table))
-        formatted = getattr(SqlQueries, self.sql).format(self.table)
-        redshift.run(formatted)
+
+        redshift = PostgresHook(postgres_conn_id=self.conn_id)
+
+        if (self.mode == "append"):
+            redshift.run(LoadDimensionOperator.load_dimension_table_insert.format(self.table, self.sql))
+
+        if (self.mode == "truncate"):
+            redshift.run(LoadDimensionOperator.load_dimension_table_truncate.format(self.table))
+            redshift.run(LoadDimensionOperator.load_dimension_table_insert.format(self.table, self.sql))
+
+            # self.log.info(f"Successful completeion of {self.mode} on {self.table}")
